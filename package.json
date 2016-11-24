@@ -1,0 +1,26 @@
+{
+  "name": "taybot",
+  "version": "0.0.1",
+  "description": "a discord bot for the people of the united planet earth",
+  "main": "tay.js",
+  "scripts": {
+    "test": "test",
+    "start": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skavrx/Tay.git"
+  },
+  "keywords": [
+    "tay",
+    "ai",
+    "discord",
+    "bot"
+  ],
+  "author": "skavrx",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/skavrx/Tay/issues"
+  },
+  "homepage": "https://github.com/skavrx/Tay#readme"
+}
