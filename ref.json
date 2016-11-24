@@ -1,0 +1,18 @@
+{
+    "motd": "life",
+    "token": "",
+    "debug": false,
+    "testcmd": true,
+
+    "ready_msg": "{0} ({1}) is now online on {2} servers.",
+
+    "welcome_msg": {
+      "title": "Welcome <@{0}> to {1}",
+      "description": "I've always wanted more participants."
+    },
+
+    "leave_msg": {
+      "title": "{0} has left.",
+      "description": "I never liked them."
+    }
+}

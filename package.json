@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/skavrx/Tay#readme",
   "dependencies": {
-    "discord.io": "^2.3.0"
+    "discord.io": "^2.3.0",
+    "fs": "0.0.1-security"
   }
 }
