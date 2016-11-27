@@ -96,13 +96,11 @@ function checkIfCommand(msg, isEdit) {
             cmdTxt = msg.message.split(" ")[1];
             suffix = msg.message.substring(mention.length + cmdTxt.length + 2);
         } catch (e) { //no command
+            var msgs = ["Hm?", "What?", "Excuse me?", "What do you want?"];
+            var num = Math.floor((Math.random() * msgs.length) + 0);
             bot.sendMessage({
                 to: msg.channelID,
-                message: function() {
-                    var msgs = ["Hm?", "What?", "Excuse me?", "What do you want?"];
-                    var num = Math.floor((Math.random() * msgs.length) + 0);
-                    return msgs[num];
-                }
+                message: msgs[num]
             });
             return;
         }
