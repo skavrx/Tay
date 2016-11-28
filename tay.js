@@ -48,15 +48,15 @@ var commands = {
                     fields: [{
                         name: 'Servers',
                         value: svrs,
-                        inline: false
+                        inline: true
                     }, {
                         name: 'Channels',
                         value: chnnls,
-                        inline: false
+                        inline: true
                     }, {
                         name: 'Users',
                         value: usrs,
-                        inline: false
+                        inline: true
                     }],
                     thumbnail: {
                         url: 'https://cdn.discordapp.com/avatars/' + bot.id + '/' + bot.avatar + '.jpg',
@@ -97,7 +97,7 @@ function checkIfCommand(msg, isEdit) {
             suffix = msg.message.substring(mention.length + cmdTxt.length + 2);
         } catch (e) { //no command
             var msgs = ["Hm?", "What?", "Excuse me?", "What do you want?"];
-            var num = Math.floor((Math.random() * msgs.length) + 0);
+            var num = Math.floor(Math.random() * msgs.length);
             bot.sendMessage({
                 to: msg.channelID,
                 message: msgs[num]
