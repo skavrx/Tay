@@ -31,10 +31,47 @@ bot.on('ready', function() {
     });
 });
 
+// = = = = = = = = =
+// Load custom permissions
+var dangerousCommands = ["eval", "pullanddeploy", "setUsername"];
+var Permissions = {};
+try {
+    Permissions = require("./permissions.json");
+} catch (e) {
+    Permissions.global = {};
+    Permissions.users = {};
+}
+
+for (var i = 0; i < dangerousCommands.length; i++) {
+    var cmd = dangerousCommands[i];
+    if (!Permissions.global.hasOwnProperty(cmd)) {
+        Permissions.global[cmd] = false;
+    }
+}
+Permissions.checkPermission = function(user, permission) {
+    try {
+        var allowed = true;
+        try {
+            if (Permissions.global.hasOwnProperty(permission)) {
+                allowed = Permissions.global[permission] === true;
+            }
+        } catch (e) {}
+        try {
+            if (Permissions.users[user.id].hasOwnProperty(permission)) {
+                allowed = Permissions.users[user.id][permission] === true;
+            }
+        } catch (e) {}
+        return allowed;
+    } catch (e) {}
+    return false;
+}
+fs.writeFile("./permissions.json", JSON.stringify(Permissions, null, 2));
+// = = = = = = = = = = = =
+
 var commands = {
     "info": {
-        usage: "",
-        description: "",
+        usage: "info",
+        description: "Gives some information about me!",
         process: function(bot, msg) {
             var svrs = Object.keys(bot.servers).length,
                 chnnls = Object.keys(bot.channels).length,
@@ -69,14 +106,24 @@ var commands = {
         }
     },
     "ping": {
-        usage: "",
-        description: "",
+        usage: "ping",
+        description: "Says pong! (Used to test latency.)",
         process: function(bot, msg) {
             bot.sendMessage({
                 to: msg.channelID,
                 message: "Pong!"
             });
         }
+    },
+    "clear": {
+      usage: "clear <messages>",
+      description: "Clears a certain amount of messages in the channel.",
+      process: function(bot, msg) {
+          bot.sendMessage({
+              to: msg.channelID,
+              message: ""
+          });
+      }
     }
 };
 
@@ -175,17 +222,24 @@ function checkIfCommand(msg, isEdit) {
     } else {
         var cmd = commands[cmdTxt];
 
-        try {
-            cmd.process(bot, msg);
-        } catch (e) {
-            var msgTxt = "command " + cmdTxt + " failed :(";
-            if (ref.debug) {
-                msgTxt += "\n" + e.stack;
+        if (Permissions.checkPermission(msg.user, cmdTxt)) {
+            try {
+                cmd.process(bot, msg);
+            } catch (e) {
+                var msgTxt = "command " + cmdTxt + " failed :(";
+                if (ref.debug) {
+                    msgTxt += "\n" + e.stack;
+                }
+                bot.sendMessage({
+                    to: msg.channelID,
+                    message: msgTxt
+                });
             }
-            bot.sendMessage({
-                to: msg.channelID,
-                message: msgTxt
-            });
+        } else {
+          bot.sendMessage({
+              to: msg.channelID,
+              message: "You do not have permission!"
+          });
         }
     }
 
@@ -213,6 +267,45 @@ bot.on('messageUpdate', function(user, userID, channelID, message, event) {
     checkIfCommand(msg, true);
 });
 
+bot.on('guildMemberAdd', function(event) {
+    if (ref.debug) console.log(event);
+    var serverID = event.guild_id;
+    bot.sendMessage({
+        to: serverID,
+        embed: {
+            title: String.format(ref.welcome_msg.title, bot.users[event.id].id, bot.servers[serverID].name),
+            description: String.format(ref.welcome_msg.description),
+            thumbnail: {
+                url: 'https://cdn.discordapp.com/avatars/' + event.id + '/' + bot.users[event.id].avatar + '.jpg',
+                width: 100,
+                height: 100
+            },
+            color: parseInt('1E90FF', 16),
+            timestamp: new Date()
+        }
+    });
+});
+
+bot.on('guildMemberRemove', function(event) {
+    if (ref.debug) console.log(event);
+    var serverID = event.guild_id;
+    console.log(serverID);
+    bot.sendMessage({
+        to: serverID,
+        embed: {
+            title: String.format(ref.leave_msg.title, bot.users[event.id].username),
+            description: String.format(ref.leave_msg.description),
+            thumbnail: {
+                url: 'https://cdn.discordapp.com/avatars/' + event.id + '/' + bot.users[event.id].avatar + '.jpg',
+                width: 100,
+                height: 100
+            },
+            color: parseInt('1E90FF', 16),
+            timestamp: new Date()
+        }
+    });
+});
+
 bot.on('disconnect', function(errMsg, code) {
     console.log("I have been disconnected.");
     process.exit(1); //exit node.js with an error
@@ -221,3 +314,14 @@ bot.on('disconnect', function(errMsg, code) {
 bot.on('any', function(event) {
     if (ref.debug) console.log(event); // Log all events if debug is true
 });
+
+exports.addCommand = function(commandName, commandObject){
+    try {
+        commands[commandName] = commandObject;
+    } catch(err){
+        console.log(err);
+    }
+}
+exports.commandCount = function(){
+    return Object.keys(commands).length;
+}
