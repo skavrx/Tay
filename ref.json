@@ -1,0 +1,19 @@
+{
+    "motd": "life",
+    "token": "MjQ5NzMyODEzMTYxNjI3NjYw.CxKlUg.71PLqxtF5SQounREwcyMCftYGnw",
+    "debug": false,
+    "testcmd": true,
+
+    "prefix": "-",
+    "ready_msg": "{0} ({1}) is now online on {2} servers, {3} channels, and {4} users.",
+
+    "welcome_msg": {
+      "title": "Welcome <@{0}> to {1}",
+      "description": "I've always wanted more participants."
+    },
+
+    "leave_msg": {
+      "title": "{0} has left.",
+      "description": "I never liked them."
+    }
+}
